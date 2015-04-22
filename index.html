@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Hot-Zone</title>
+    <link rel="stylesheet" href="css/hot_zone.css"/><!-- 切图控件样式 -->
+    <link rel="stylesheet" href="css/colorpicker.css"/><!-- 颜色选择器样式 -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+      <style type="text/css">
+    textarea.cutCode,textarea.Property, textarea.DataEdit{ display: none;}
+    </style>
+</head>
+
+<body>
+<a href="javascript:;" class="Modal-trigger">打开热区工具</a>
+<textarea name="model_3[Code]" class="cutCode" data-name="[Code]" style="dispay:none"></textarea> 
+<input type="hidden" value="" name="model_3[Image]" class="cutImage" data-name="[Image]" style="dispay:none">
+<textarea class="Property" name="model_3[Property]" data-name="[Property]"></textarea>
+<textarea class="DataEdit" name="model_3[DataEdit]" data-name="[DataEdit]" style="dispay:none">{"cutData":[]}</textarea> 
+
+<!-- 切图控件弹出层-->
+<div class="q-modal v_hidden" id="Modal-c">
+    <div class="modal-header">
+        <button type="submit" class="close">×</button>
+        <h3 class="draggable">热区切片工具</h3>
+    </div>
+    <div class="modal-body" id="cutImgBody">
+        <div class="p_step clearfix">
+            <div class="p_step_icon one"></div>
+            <div class="p_step_r">
+                <input type="button" class="btn" id="cutAddImg" value="上传图片"/>
+            </div>
+        </div>
+        <div class="p_step">
+            <div class="p_step_icon two"></div>
+            <div class="p_step_r">
+                <label for="">划出热区，双击热区设置链接</label><span class="img_tip"></span>
+                <p class="help_block">
+                    * 在图片上按住鼠标左键，划出热区范围 <br>
+                    * 按住鼠标可拖拽热区调整范围 ，双击可编辑链接 <br>
+                    * 图片高度不超过2000像素
+                </p>
+                <div class="tip-ok">上传成功！</div>
+                <div class="tip-er"></div>
+                <div class="img_ab v_hidden">
+                    图片尺寸： <span id="size"></span>，图片地址： <a class="img-url" target="_blank" href=""></a>
+                    <a href="javascript:;" id="copyUrl"><div id="text-success">图片地址复制成功！</div><i class="icon-copy"></i>复制</a>
+                    <a href="#" id="delImg"><i class="icon-del"></i>删除</a>
+                </div>
+                <div class="img_wrap">
+                    <div class="img_map" style="width: 100%;height: 100%;">
+                        <div class="img_center" style="position: relative; width:960px; margin:0 auto;">
+                        </div>
+                    </div>
+                    <div class="tip">请上传图片</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-foot">
+        <div class="p_step">
+            <div class="p_step_icon three"></div>
+            <div class="p_step_r">
+                <input type="button" value="保 存" class="btn btn-info" id="commit"/>
+                <a href="#" class="close-btn">取消</a>
+            </div>
+        </div>
+    </div>
+    <div class="modal-shade"></div>
+</div>
+<div class="q-modal v_hidden" id="Modal-h">
+    <div class="modal-header">
+        <button type="submit" class="close">×</button>
+        <h3 class="draggable">热区设置</h3>
+    </div>
+    <div class="modal-body">
+        <div class="ctr clearfix">
+            <lable>热区类型</lable>
+            <div class="ctr-r chosen_no_search">
+                <select name="" id="hotType" class="chosen">
+                    <option value="link">链接</option>
+                    <option value="video">视频</option>
+                    <option value="popup">弹出层</option>
+                    <option value="brand">收藏品牌</option>
+                    <option value="hotik">点击领券</option>
+                    <option value="baijia">败家排行</option>
+                    <option value="anchor">定位至模块</option>
+                    <option value="countdown">倒计时</option>
+                </select>
+            </div>
+        </div>
+        <div class="ctr clearfix" id="hotTypeWrap">
+            <div id="linkWrap" class="hotType">
+                <div class="clearfix">
+                    <lable>点击转至</lable>
+                    <div class="ctr-r chosen_no_search">
+                        <select name="" id="jumpType" class="chosen_w_auto" style="width:200px"></select>
+                        <div>
+                            <div class="inline-setting">
+                                <span>http://www.jumei.com/i/deal/ <input type='text' id='content' name='content' placeholder='填入deal主站hashid'>.html</span>
+                            </div>
+                            <a href="#" class="open-url">检查链接 <i class="icon-open"></i></a></div>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <lable>打开方式</lable>
+                    <div class="ctr-r">
+                        <lable id="radio-lable-a"><input type="radio" name="open-w" id="a"/>当前页</lable>
+                        <lable id="radio-lable-b"><input type="radio" name="open-w" id="b" checked/>新页面</lable>
+                    </div>
+                </div>
+            </div>
+            <div id="videoWrap" class="hotType v_hide">
+                <div class="clearfix">
+                    <lable>视频尺寸</lable>
+                    <div class="ctr-r">
+                        宽 <input type="text" id="videoW"/> 高 <input type="text" id="videoH"/>
+                    </div>
+                </div>
+                <div class="clearfix">
+                    <lable>视频代码</lable>
+                    <div class="ctr-r">
+                        <input type="text" id="videoCode"/>
+                        <span class="help-inline">填写swf结尾的视频地址</span>
+                    </div>
+                </div>
+            </div>
+            <div id="popupWrap" class="hotType v_hide">
+                <div class="clearfix">
+                    <lable>图片地址</lable>
+                    <div class="ctr-r">
+                        <input type="text" id="popupPath"/><br/>
+                        <a href="javascript:;" class="btn popupAddImg">上 传</a>
+                    </div>
+                </div>
+            </div>
+            <div id="brandWrap" class="hotType v_hide">
+                <lable>品牌名称</lable>
+                <div class="ctr-r  {*{if $roleType !='jop'}*}{if $createIsVirtual}chosen_no_search {/if}	">
+                    <select name="" id="brand"></select>
+                    {*{if $roleType =='jop'}*}
+                    {if $createIsVirtual}
+                        <a href="javascript:;" class="view_details brand_details">查看品牌详情</a>
+                    {/if}
+                </div>
+            </div>
+            <div id="hotikWrap" class="hotType v_hide">
+                <lable>现金券链接</lable>
+                <div class="ctr-r">
+                    <input type="text" id="hotik" value=""/>
+                </div>
+            </div>
+            <div id="baijiaWrap" class="hotType v_hide">
+                <div id="baijia">
+                    <p class="clearfix"> <lable>品牌ID</lable> <input type="text"/><span></span></p>
+                </div>
+                <a href="javascript:;" class="add_baijia_pro">添加</a>
+            </div>
+            <div id="anchorWrap" class="hotType v_hide">
+                <lable>定位至模块</lable>
+                <div class="ctr-r">
+                    <input type="text" id="anchor" value="" placeholder="填写模块名称"/>
+                </div>
+            </div>
+            <div id="countdownWrap" class="hotType v_hide">
+                <table>
+                    <tr>
+                        <td>字体大小</td>
+                        <td><select id="countdown_fontsize"></select>
+                        </td>
+                        <td>
+                            数字间距
+                        </td>
+                        <td><select id="countdown_spacing"></select></td>
+                        <td>字体加粗 <input type="checkbox" id="countdown_weight" checked/></td>
+                    </tr>
+                    <tr>
+                        <td>字体颜色</td>
+                        <td>
+                            <div class="colorSelector">
+                                <div id="countdown_color_show" class="colorshow" style="background-color: rgb(0, 0, 0);"></div>
+                                <input type="hidden" value="000000" id="countdown_color">
+                            </div>
+                        </td>
+                        <td>
+                            默认显示
+                        </td>
+                        <td colspan="2">
+                            天 <input type="checkbox" id="countdown_set_day" checked/>
+                            &nbsp;&nbsp;时 &nbsp;&nbsp; 分 &nbsp;&nbsp; 秒 &nbsp;&nbsp;
+                            毫秒 <input type="checkbox" id="countdown_set_millisecond"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>倒计时结束</td>
+                        <td colspan="5"><input type="text" id="countdown_end_time"/></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="btn-bar ctr-r">
+            <input type="button" value="保 存" class="btn btn-success" id="save-setting"/>
+            <a href="#" class="close-btn">取消</a>
+            <span class="text-error">请填写链接！</span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="js/hot_zone.js"></script>
+<script type="text/javascript" src="js/CountDown.js"></script>
+<script type="text/javascript" src="js/Zeroclipboard.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+<script type="text/javascript" src="js/timepicker.js"></script>
+<script type="text/javascript" src="js/colorpicker.js"></script>
+<script type="text/javascript">
+    JMStore.CutImg.init()
+</script>
+</body>
+
+</html>
